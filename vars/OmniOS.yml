@@ -1,1 +1,3 @@
+ssh_owner: root
 ssh_group: bin
+sshd_service_name: network/ssh

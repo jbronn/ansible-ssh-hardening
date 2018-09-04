@@ -91,9 +91,11 @@ RSAAuthentication yes
 # Disable password-based authentication, it can allow for potentially easier brute-force attacks.
 PasswordAuthentication {{ 'yes' if ssh_client_password_login else 'no' }}
 
+{% if ssh_gssapi_support -%}
 # Only use GSSAPIAuthentication if implemented on the network.
 GSSAPIAuthentication no
 GSSAPIDelegateCredentials no
+{% endif %}
 
 # Disable tunneling
 Tunnel no

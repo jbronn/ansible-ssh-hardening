@@ -17,12 +17,12 @@ provisioner:
   require_ruby_for_busser: false
   ansible_verbose: true
   ansible_diff: true
-  hosts: all
+
   roles_path: ../ansible-ssh-hardening/
   http_proxy: <%= ENV['http_proxy'] || nil %>
   https_proxy: <%= ENV['https_proxy'] || nil %>
   playbook: tests/default.yml
-  ansible_diff: true
+
   ansible_extra_flags:
     - "--skip-tags=sysctl"
 
@@ -58,6 +58,13 @@ platforms:
 - name: ubuntu1604-ansible-latest
   driver:
     image: rndmh3ro/docker-ubuntu1604-ansible:latest
+    platform: ubuntu
+    run_command: /sbin/init
+    provision_command:
+      - systemctl enable ssh.service
+- name: ubuntu1804-ansible-latest
+  driver:
+    image: rndmh3ro/docker-ubuntu1804-ansible:latest
     platform: ubuntu
     run_command: /sbin/init
     provision_command:

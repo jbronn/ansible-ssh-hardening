@@ -21,16 +21,13 @@
     - ansible-ssh-hardening
   vars:
     network_ipv6_enable: true
-    ssh_allow_root_with_key: true
     ssh_allow_tcp_forwarding: true
     ssh_gateway_ports: true
     ssh_allow_agent_forwarding: true
-    ssh_server_permit_environment_vars: ['PWD','HTTP_PROXY']
+    ssh_server_permit_environment_vars: ['PWD', 'HTTP_PROXY']
     ssh_client_alive_interval: 100
     ssh_client_alive_count: 10
     ssh_client_password_login: true
-    ssh_client_cbc_required: true
-    ssh_client_weak_kex: true
     ssh_challengeresponseauthentication: true
     ssh_compression: true
     ssh_allow_users: 'root kitchen vagrant'
@@ -39,15 +36,15 @@
     ssh_deny_groups: 'foo bar'
     ssh_authorized_keys_file: '/etc/ssh/authorized_keys/%u'
     ssh_max_auth_retries: 10
+    ssh_permit_root_login: "without-password"
     ssh_permit_tunnel: true
     ssh_print_motd: true
     ssh_print_last_log: true
     ssh_banner: true
     ssh_server_password_login: true
-    ssh_server_weak_hmac: true
     sftp_enabled: true
     sftp_chroot: true
-    ssh_server_enabled: false
+    #ssh_server_enabled: false
     ssh_server_match_group:
       - group: 'root'
         rules: 'AllowTcpForwarding yes'
@@ -66,5 +63,21 @@
     ssh_trusted_user_ca_keys:
       - '# ssh-rsa ...'
     ssh_authorized_principals_file: '/etc/ssh/auth_principals/%u'
-    ssh_authorized_principals :
+    ssh_authorized_principals:
       - { path: '/etc/ssh/auth_principals/root', principals: [ 'root' ], owner: "{{ ssh_owner }}", group: "{{ ssh_group }}", directoryowner: "{{ ssh_owner }}", directorygroup: "{{ ssh_group}}" }
+    ssh_macs:
+      - hmac-sha2-512
+      - hmac-sha2-256
+    ssh_ciphers:
+      - aes256-ctr
+      - aes192-ctr
+      - aes128-ctr
+      - aes256-cbc
+    ssh_kex:
+      - diffie-hellman-group-exchange-sha256
+      - diffie-hellman-group-exchange-sha1
+    ssh_custom_options:
+      - "Include /etc/ssh/ssh_config.d/*"
+    sshd_custom_options:
+      - "AcceptEnv LANG"
+

@@ -8,12 +8,14 @@
    - '{{ ansible_os_family }}.yml'
 
 - name: get openssh-version
-  shell: ssh -V 2>&1 | sed -r 's/.*_([0-9]*\.[0-9]).*/\1/g'
-  args:
-    executable: /bin/sh
+  command: ssh -V
+  register: sshd_version_raw
   changed_when: false
-  register: sshd_version
   check_mode: no
+
+- name: parse openssh-version
+  set_fact:
+    sshd_version: "{{ sshd_version_raw.stderr | regex_replace('.*_([0-9]*.[0-9]).*', '\\1') }}"
 
 - name: include tasks to create crypo-vars
   include_tasks: crypto.yml
@@ -72,7 +74,6 @@
   when:
     - ssh_use_pam | bool
     - ssh_challengeresponseauthentication | bool
-    - ssh_google_auth | bool
 
 - name: include selinux specific tasks
   include_tasks: selinux.yml

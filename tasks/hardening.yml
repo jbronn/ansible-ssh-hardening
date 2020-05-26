@@ -2,10 +2,10 @@
 - name: Set OS dependent variables
   include_vars: '{{ item }}'
   with_first_found:
-   - '{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml'
-   - '{{ ansible_distribution }}.yml'
-   - '{{ ansible_os_family }}_{{ ansible_distribution_major_version }}.yml'
-   - '{{ ansible_os_family }}.yml'
+   - '{{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}.yml'
+   - '{{ ansible_facts.distribution }}.yml'
+   - '{{ ansible_facts.os_family }}_{{ ansible_facts.distribution_major_version }}.yml'
+   - '{{ ansible_facts.os_family }}.yml'
 
 - name: get openssh-version
   command: ssh -V
@@ -41,6 +41,18 @@
   notify: restart sshd
   when: ssh_server_hardening | bool
 
+- name: disable dynamic MOTD
+  pamd:
+    name: sshd
+    type: session
+    control: optional
+    module_path: pam_motd.so
+    state: absent
+  when:
+    - ssh_server_hardening | bool
+    - ssh_pam_support | bool
+    - not (ssh_print_motd | bool)
+
 - name: create ssh_config and set permissions to root/644
   template:
     src: 'openssh.conf.j2'
@@ -69,12 +81,6 @@
   include_tasks: ca_keys_and_principals.yml
   when: ssh_trusted_user_ca_keys_file | length > 0
 
-- name: include tasks to setup 2FA
-  include_tasks: 2fa.yml
-  when:
-    - ssh_use_pam | bool
-    - ssh_challengeresponseauthentication | bool
-
 - name: include selinux specific tasks
   include_tasks: selinux.yml
-  when: ansible_selinux and ansible_selinux.status == "enabled"
+  when: ansible_facts.selinux and ansible_facts.selinux.status == "enabled"

@@ -1,4 +1,7 @@
-ssh_owner: root
-ssh_group: bin
+---
+sshd_path: /usr/sbin/sshd
+ssh_host_keys_dir: '/etc/ssh'
 ssh_pam_support: false
 sshd_service_name: network/ssh
+ssh_owner: root
+ssh_group: bin

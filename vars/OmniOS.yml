@@ -1,3 +1,4 @@
 ssh_owner: root
 ssh_group: bin
+ssh_pam_support: false
 sshd_service_name: network/ssh
